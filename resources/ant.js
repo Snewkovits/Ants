@@ -10,30 +10,36 @@ document.onmousemove = event => {
     mousePosition = {x: event.clientX, y: event.clientY};
 }
 
-const move = (ant, position, lastUpdateRef) => {
-    let timestamp = Date.now();
+const move = (ant, position, movePosition, lastDegreeRef, lastUpdateRef) => {
+    const timestamp = Date.now();
     if (timestamp - lastUpdateRef >= 100) {
-        ant.style.left = position.x + 'px';
-        ant.style.top = position.y + 'px';
-        let degree = Math.atan((mousePosition.y - position.y) / (mousePosition.x - position.x)) * (180 / Math.PI);
-        console.log(Math.atan((mousePosition.y - position.y) / (mousePosition.x - position.x)));
-        
-        ant.style.rotate = degree + 90 + 'deg';
+        const dx = mousePosition.x - position.x;
+        const dy = mousePosition.y - position.y;
 
-        debugX.style.left = position.x + 'px';
-        debugX.style.top = position.y + 'px';
-        debugX.style.width = mousePosition.x - position.x + 'px';
+        const radian = Math.atan2(dy, dx);
+        let degree = radian * (180 / Math.PI) + 90;
 
-        debugY.style.left = mousePosition.x + 'px';
-        debugY.style.top = position.y + 'px';
-        debugY.style.height = mousePosition.y - position.y + 'px';
+        degree = (degree + 360) % 360;
 
-        debugZ.style.left = position.x + 'px';
-        debugZ.style.height = Math.atan((mousePosition.y - position.y) / (mousePosition.x - position.x)) + 'px';
+        let delta = degree - lastDegreeRef;
+        if (delta > 180) delta -= 360;
+        if (delta < -180) delta += 360;
 
-        lastUpdateRef = Date.now();
+        const smoothDegree = lastDegreeRef + delta;
+        console.log(smoothDegree);
+
+        ant.style.transform = `translate(-50%, -50%) rotate(${smoothDegree}deg)`;
+        ant.style.left = movePosition.x + 'px';
+        ant.style.top = movePosition.y + 'px';
+
+        lastUpdateRef = timestamp;
+        lastDegreeRef = degree;
     }
-    requestAnimationFrame(() => move(ant, position, lastUpdateRef));
-}
 
-move(ant, {x: 200, y: 200}, Date.now());
+    requestAnimationFrame(() =>
+        move(ant, position, movePosition, lastDegreeRef, lastUpdateRef)
+    );
+};
+
+
+move(ant, {x: 200, y: 200}, {x: 205, y: 210}, 0, Date.now());

@@ -7,8 +7,9 @@
     content: url("../assets/ant.png");
     width: 1em;
     position: absolute;
+    z-index: 1;
 
-    transition: left .5s, top .5s, rotate .2s;
+    transition: left .5s, top .5s, translate .2s;
 }
 
 #x, #y, #z {
