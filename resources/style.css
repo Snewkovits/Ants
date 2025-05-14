@@ -9,7 +9,7 @@
     position: absolute;
     z-index: 1;
 
-    transition: left .5s, top .5s, translate .2s;
+    transition: left .5s, top .5s, transform .1s;
 }
 
 #x, #y, #z {
