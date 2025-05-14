@@ -20,10 +20,12 @@ const createAnt = (position) => {
 
 const move = (ant, position, velocity, lastDegreeRef, lastUpdateRef) => {
     const timestamp = Date.now();
-    if (timestamp - lastUpdateRef >= 100) {
+    if (timestamp - lastUpdateRef >= 200) {
         const antSize = ant.getBoundingClientRect();
         const halfW = antSize.width / 2;
         const halfH = antSize.height / 2;
+
+        velocity = randomVectorGenerator(Math.atan2(velocity.dy, velocity.dx) * (180 / Math.PI), 60, 10)
 
         let nextX = position.x + velocity.dx;
         let nextY = position.y + velocity.dy;
