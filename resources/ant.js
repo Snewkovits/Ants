@@ -2,20 +2,29 @@ const debugX = document.getElementById('x');
 const debugY = document.getElementById('y');
 const debugZ = document.getElementById('z');
 
-let mousePosition = {x: 0, y: 0};
-
-
-document.onmousemove = event => {
-    mousePosition = {x: event.clientX, y: event.clientY};
-}
-const createAnt = (position) => {
+const createAnt = (position, antHillName) => {
     const ant = document.createElement("div");
     ant.setAttribute("name", getRandomName());
+    ant.setAttribute("anthill", antHillName);
     ant.className = "ant";
     document.body.append(ant);
 
     const velocity = randomVectorGenerator(0, 360, 5); // indulási irány
     move(ant, position, velocity, 0, Date.now());
+}
+
+const createAntHill = (position) => { // ez valahogy elrontotta az egészet
+    const antHill = document.createElement('div');
+    const name = getRandomName();
+    antHill.setAttribute('name', name);
+    antHill.style.left = position.x + 'px';
+    antHill.style.top = position.y + 'px';
+    antHill.className = 'anthill';
+    document.body.append(antHill);
+
+    for (let i = 0; i < 10; i++) {
+        createAnt(position, name);
+    }
 }
 
 const move = (ant, position, velocity, lastDegreeRef, lastUpdateRef) => {
@@ -31,14 +40,17 @@ const move = (ant, position, velocity, lastDegreeRef, lastUpdateRef) => {
         let nextY = position.y + velocity.dy;
 
         // Falütközés: visszafordítás
-        if (nextX - halfW < 0 || nextX + halfW > window.innerWidth) {
-            velocity.dx *= -1;
-            nextX = position.x + velocity.dx;
+        const turnBack = () => {
+            if (nextX - halfW < 0 || nextX + halfW > window.innerWidth) {
+                velocity.dx *= -1;
+                nextX = position.x + velocity.dx;
+            }
+            if (nextY - halfH < 0 || nextY + halfH > window.innerHeight) {
+                velocity.dy *= -1;
+                nextY = position.y + velocity.dy;
+            }
         }
-        if (nextY - halfH < 0 || nextY + halfH > window.innerHeight) {
-            velocity.dy *= -1;
-            nextY = position.y + velocity.dy;
-        }
+        turnBack();
 
         // Szög számítás
         const radian = Math.atan2(velocity.dy, velocity.dx);
